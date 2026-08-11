@@ -18,18 +18,21 @@ exactly what your query returned.
 **Two things from the maintainer:**
 
 1. Access to the company tailnet (Tailscale). Install it, sign in.
-2. Your personal **licence key** — one line beginning `gvz1.`
+2. Your personal **service key** — one line beginning `gvz1.`
 
-Save the key somewhere the upload command can find it:
+Save the key somewhere the upload command can find it. (If you set GISviz up
+before these were renamed from "licence key" and already have
+`~/.gisviz/licence.key`, it still works — leave it, and use that filename in the
+upload command below.)
 
 ```bash
-mkdir -p ~/.gisviz && pbpaste > ~/.gisviz/licence.key
+mkdir -p ~/.gisviz && pbpaste > ~/.gisviz/service.key
 ```
 
 On Windows PowerShell — paste the key into the file Notepad opens, then save:
 
 ```powershell
-New-Item -ItemType Directory -Force $HOME\.gisviz; notepad $HOME\.gisviz\licence.key
+New-Item -ItemType Directory -Force $HOME\.gisviz; notepad $HOME\.gisviz\service.key
 ```
 
 Open Claude Desktop → Settings → Developer → Edit Config, and add:
@@ -57,7 +60,7 @@ produce, and any request you file, are attributable to you.
 
 > **"Check my GISviz access."**
 
-You get your name, days remaining on your licence, and confirmation the server
+You get your name, days remaining on your service key, and confirmation the server
 can draw. If something is wrong it says exactly what — take that message to the
 maintainer rather than guessing.
 
@@ -100,13 +103,13 @@ Claude cannot do this step — the file is on your machine, not the server's. Ru
 this yourself:
 
 ```bash
-curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(cat ~/.gisviz/licence.key)"
+curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(cat ~/.gisviz/service.key)"
 ```
 
 Windows PowerShell:
 
 ```powershell
-curl.exe -T C:\Users\you\Downloads\my_query.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\licence.key)"
+curl.exe -T C:\Users\you\Downloads\my_query.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\service.key)"
 ```
 
 It answers immediately with a **data id** like `ds_a1b2c3d4e5f6`, plus what it
@@ -240,7 +243,7 @@ Every chart comes back two ways:
 - **A preview in the chat** — downscaled so it loads. Fine for deciding.
 - **A download link** — the full-resolution PNG. This is the deliverable.
 
-The link works only for your licence. Sending it to a colleague will not work for
+The link works only for your service key. Sending it to a colleague will not work for
 them.
 
 > **Charts are deleted from the server after 2 days.** Download anything you
@@ -250,14 +253,14 @@ them.
 
 ## 9. When something goes wrong
 
-**"…needs a valid licence key."** Yours is missing, mistyped or expired. Ask the
+**"…needs a valid service key."** Yours is missing, mistyped or expired. Ask the
 maintainer.
 
-**"This licence is registered to … but the request came from …"** You are on a
+**"This service key is registered to … but the request came from …"** You are on a
 different machine or network than the key was issued for. Ask for a reissue,
-quoting the licence id.
+quoting the key id.
 
-**"Which dataset?" / "No dataset ds_… for this licence."** You have not uploaded
+**"Which dataset?" / "No dataset ds_… for this service key."** You have not uploaded
 anything yet, or that upload has expired — they last two days. Upload again (§3),
 or ask *"what data do I have on GISviz?"*
 
@@ -270,7 +273,7 @@ in your query — this would otherwise have rendered an empty sheet with no clue
 why.
 
 **HTTP 401 on upload.** The server did not accept your key. Check
-`~/.gisviz/licence.key` holds the single `gvz1.…` line and nothing else.
+`~/.gisviz/service.key` holds the single `gvz1.…` line and nothing else.
 
 **HTTP 413 on upload.** Over 2 GB. Narrow the query.
 
@@ -314,7 +317,7 @@ an honest picture of the traffic pattern; it is not a count of vessels.
 | ask for | example |
 |---|---|
 | check access | *"Check my GISviz access"* |
-| upload | `curl -T file.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(cat ~/.gisviz/licence.key)"` |
+| upload | `curl -T file.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(cat ~/.gisviz/service.key)"` |
 | what you have | *"What data do I have on GISviz?"* |
 | check a file | *"What's in ds_a1b2c3d4e5f6?"* |
 | list ports | *"What ports can you plot?"* |

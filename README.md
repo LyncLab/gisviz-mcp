@@ -11,7 +11,7 @@ you can plot is exactly what your query returned.
 You need two things from the maintainer:
 
 1. Access to the LyncLab tailnet (Tailscale)
-2. Your personal **licence key** — one line beginning `gvz1.`
+2. Your personal **service key** — one line beginning `gvz1.`
 
 ---
 
@@ -43,18 +43,18 @@ Restart, then ask **"Check my GISviz access."**
 
 ## Send your data
 
-Save your key to `~/.gisviz/licence.key` first, then:
+Save your key to `~/.gisviz/service.key` first, then:
 
 ```bash
 curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload \
-  -H "Authorization: Bearer $(cat ~/.gisviz/licence.key)"
+  -H "Authorization: Bearer $(cat ~/.gisviz/service.key)"
 ```
 
 Windows PowerShell:
 
 ```powershell
 curl.exe -T C:\path\to\my_query.parquet http://100.121.170.8:8787/upload `
-  -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\licence.key)"
+  -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\service.key)"
 ```
 
 You get back a **data id** — `ds_a1b2c3d4e5f6` — and a summary of what the file
@@ -77,7 +77,7 @@ to the sheet. Up to 2 GB, as `.csv`, `.csv.gz`, `.tsv` or `.parquet`.
 is not on the tailnet cannot route to it at all — which is why this guide can be
 public without exposing anything.
 
-**Your licence controls use.** It is signed, expires, and is **tied to your
+**Your service key controls use.** It is signed, expires, and is **tied to your
 machine**. Forwarding the line to a colleague gives them nothing; they need their
 own. Everything you produce is attributable to you.
 
@@ -137,11 +137,11 @@ to keep.
 
 The error messages are written to be acted on. Two worth recognising:
 
-**"This licence is registered to … but the request came from …"** — you are on a
+**"This service key is registered to … but the request came from …"** — you are on a
 different machine or network than the key was issued for. Ask for a reissue,
-quoting the licence id in the message.
+quoting the key id in the message.
 
-**"No dataset ds_… for this licence."** — you have not uploaded anything yet, or
+**"No dataset ds_… for this service key."** — you have not uploaded anything yet, or
 that upload has expired after two days. Upload again.
 
 **"This file cannot be plotted: no LON column…"** — your export is missing a

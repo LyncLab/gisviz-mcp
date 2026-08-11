@@ -109,7 +109,7 @@ Takes no arguments.
 
 ## `whoami`
 
-Who am I, what can I do, and when does my access expire. Call this first — everything else refuses without a valid licence.
+Who am I, what can I do, and when does my access expire. Call this first — everything else refuses without a valid service key.
 
 Takes no arguments.
 
