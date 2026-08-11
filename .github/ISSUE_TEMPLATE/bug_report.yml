@@ -1,0 +1,53 @@
+name: Something is wrong
+description: A chart came out incorrect, or something errored
+labels: ["bug", "from-studio"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Quicker way:** ask Claude to report it — *"report that as a bug"* — and it
+        fills all of this in from what it actually did, then hands you a link.
+
+        This tracker is **public**. Do not paste your service key (`gvz1.…`), AIS
+        records, or a confidential client's name. Row counts and column names are
+        fine and are what the tool attaches.
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: Concretely. Quote the error in full if there was one.
+      placeholder: The scale bar reads 1:148,000 after I asked for 1:150,000.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce it
+      description: >-
+        Steps someone else can follow. Naming the tool and the arguments is the
+        most useful thing here — ask Claude, it knows exactly what it passed.
+      value: |
+        1. Upload a file with columns …
+        2. Ask for: plot_sheet, place = …, scale = …, dpi = …
+        3. Observed: …
+    validations:
+      required: true
+  - type: textarea
+    id: data_shape
+    attributes:
+      label: The data's shape
+      description: >-
+        From inspect_data — rows, extent, time span, columns. Never the records
+        themselves.
+      placeholder: "rows: 1.2M · extent: [103.1, 103.6, 3.8, 4.1] · columns: MMSI, UTC_TIME, LON, LAT, SHIPTYPE"
+  - type: input
+    id: drawing_no
+    attributes:
+      label: Drawing number
+      description: If it got that far. Leave blank for a confidential job.

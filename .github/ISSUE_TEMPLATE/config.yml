@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Let Claude write the report for you
+    url: https://github.com/LyncLab/gisviz-mcp/blob/main/REPORTING.md
+    about: >-
+      Easiest path — tell Claude what went wrong and ask it to report it. It knows
+      the arguments it passed, fills in the reproduction steps, and hands you a
+      pre-filled link to submit.

@@ -1,0 +1,30 @@
+name: Something is missing
+description: You wanted something GISviz cannot express
+labels: ["enhancement", "from-studio"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Quicker way:** ask Claude — *"file a request for that"* — and it writes it up
+        with the settings you were using.
+
+        Please do file these rather than working around a limit by hand. A
+        workaround helps you once; a request fixes it for everyone.
+  - type: textarea
+    id: want
+    attributes:
+      label: What you were trying to produce
+      description: In your own words, as you would describe it to a colleague.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Who asked, and what happens without it
+      description: What you are doing instead today, and what that costs.
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: The settings you were using

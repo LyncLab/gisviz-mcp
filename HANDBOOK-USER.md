@@ -20,21 +20,6 @@ exactly what your query returned.
 1. Access to the company tailnet (Tailscale). Install it, sign in.
 2. Your personal **service key** — one line beginning `gvz1.`
 
-Save the key somewhere the upload command can find it. (If you set GISviz up
-before these were renamed from "licence key" and already have
-`~/.gisviz/licence.key`, it still works — leave it, and use that filename in the
-upload command below.)
-
-```bash
-mkdir -p ~/.gisviz && pbpaste > ~/.gisviz/service.key
-```
-
-On Windows PowerShell — paste the key into the file Notepad opens, then save:
-
-```powershell
-New-Item -ItemType Directory -Force $HOME\.gisviz; notepad $HOME\.gisviz\service.key
-```
-
 Open Claude Desktop → Settings → Developer → Edit Config, and add:
 
 ```json
@@ -48,7 +33,8 @@ Open Claude Desktop → Settings → Developer → Edit Config, and add:
 }
 ```
 
-Restart Claude Desktop. That is the whole installation.
+Restart Claude Desktop. **That is the whole installation** — one key, in one
+place. There is no file to create and nothing else to configure.
 
 **Your key only works on your machine.** It is tied to your tailnet address, so
 forwarding it to a colleague gives them nothing — they need their own. Charts you
@@ -99,21 +85,20 @@ You do not need to rename anything. Export what your query gives you.
 
 ### Getting it there
 
-Claude cannot do this step — the file is on your machine, not the server's. Run
-this yourself:
+Ask Claude for the command:
+
+> **"I want to upload a file — give me the upload command."**
+
+It hands you a ready-to-run line with a **one-time link** in it:
 
 ```bash
-curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(cat ~/.gisviz/service.key)"
+curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload/tk_…
 ```
 
-Windows PowerShell:
+Windows PowerShell is the same with `curl.exe`. Run it, and it answers
+immediately with a **data id** like `ds_a1b2c3d4e5f6`, plus what it found in the
+file — row count, the area it covers, the dates, the vessel types.
 
-```powershell
-curl.exe -T C:\Users\you\Downloads\my_query.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\service.key)"
-```
-
-It answers immediately with a **data id** like `ds_a1b2c3d4e5f6`, plus what it
-found in the file — row count, the area it covers, the dates, the vessel types.
 **Read that.** It is the cheapest check you will get, and it catches the two
 mistakes that otherwise produce a blank sheet: missing position columns, and
 longitude and latitude the wrong way round.
@@ -124,6 +109,13 @@ Then just talk to Claude:
 
 Or let it find the file for you — **"what data do I have on GISviz?"** lists your
 uploads.
+
+**Your service key never appears in that command.** It stays in your Claude
+config; the link carries a one-time ticket instead. The link works once and
+expires in 45 minutes — ask for a fresh one whenever you need it.
+
+**Claude cannot run the command for you**, because the file is on your machine
+and not on the server's.
 
 **Parquet is better than CSV** — smaller to send, faster to read, and the types
 survive. Both work.
@@ -241,10 +233,13 @@ If you need something outside this, see §10 — do not work around it.
 Every chart comes back two ways:
 
 - **A preview in the chat** — downscaled so it loads. Fine for deciding.
-- **A download link** — the full-resolution PNG. This is the deliverable.
+- **A download link** — the full-resolution PNG. This is the deliverable. Click
+  it; it opens.
 
-The link works only for your service key. Sending it to a colleague will not work for
-them.
+The link **works once and expires in 30 minutes**. Ask for the chart again and
+you get a fresh one — it costs nothing, because the file is already rendered.
+That is also why forwarding the link to a colleague achieves nothing: by the
+time they click it, it is spent.
 
 > **Charts are deleted from the server after 2 days.** Download anything you
 > intend to keep. The server is shared and its disk is finite.
@@ -288,14 +283,29 @@ image. If it is a tool problem, file it (§10).
 
 ---
 
-## 10. Asking for something it cannot do
+## 10. Reporting a problem, or asking for something it cannot do
 
-If Claude says the tool cannot do what you need, ask it to **file a request**. It
-writes up what you wanted, why, and the exact settings you were using, and hands
-you a pre-filled link — you press Submit.
+**Just tell Claude.**
 
-Please use it rather than working around a limitation by hand. A workaround helps
-you once; a filed request fixes it for everyone.
+> *"That came out wrong — report it as a bug."*
+> *"File a request for a wind-rose overlay."*
+
+Claude writes the report itself: what happened, what should have happened, how to
+reproduce it, and the shape of the data it happened on. It was there and it knows
+exactly which settings it passed, which is why it writes a better report than you
+can. You get a pre-filled GitHub link, read it over, and press Submit. Nothing is
+filed without you seeing it first.
+
+The issue tracker is
+**[github.com/LyncLab/gisviz-mcp/issues](https://github.com/LyncLab/gisviz-mcp/issues)**,
+and `REPORTING.md` there explains what makes a report actionable.
+
+**It is public**, so before you submit, check the text does not contain a client's
+name, a confidential drawing number, or your service key. The tool never puts any
+of those in a report — but you might, and it is worth a glance.
+
+Please report rather than working around a limitation by hand. A workaround helps
+you once; a filed issue fixes it for everyone.
 
 ---
 

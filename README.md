@@ -43,24 +43,22 @@ Restart, then ask **"Check my GISviz access."**
 
 ## Send your data
 
-Save your key to `~/.gisviz/service.key` first, then:
+Ask Claude: **"I want to upload a file — give me the command."** It hands you a
+ready-to-run line with a **one-time link** in it:
 
 ```bash
-curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload \
-  -H "Authorization: Bearer $(cat ~/.gisviz/service.key)"
+curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload/tk_…
 ```
 
-Windows PowerShell:
+Run it. You get back a **data id** — `ds_a1b2c3d4e5f6` — and a summary of what
+the file holds. Then just say *"plot ds_a1b2c3d4e5f6 for Port Klang."*
 
-```powershell
-curl.exe -T C:\path\to\my_query.parquet http://100.121.170.8:8787/upload `
-  -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\service.key)"
-```
+**Your service key stays in your Claude config and nowhere else.** The upload
+link carries a one-time ticket instead, so there is no key file to create and no
+secret on your command line. The link works once and expires in 45 minutes — ask
+for another any time, it costs nothing.
 
-You get back a **data id** — `ds_a1b2c3d4e5f6` — and a summary of what the file
-holds. Then just say *"plot ds_a1b2c3d4e5f6 for Port Klang."*
-
-**Claude cannot do this step for you**: the file is on your machine, not the
+**Claude cannot run the command for you**: the file is on your machine, not the
 server's. Everything after it is conversation.
 
 Your file needs **LON and LAT** columns (`LONGITUDE`/`LATITUDE`/`X`/`Y` also
@@ -110,6 +108,7 @@ Nothing here needs to be pulled for the tool to work. It is documentation.
 | `README.md` | connecting — this page |
 | `TOOLS.md` | every tool and argument, generated from the live server |
 | `HANDBOOK-USER.md` | how to use it well — read this once |
+| `REPORTING.md` | how to report a problem so it gets fixed |
 
 ---
 
@@ -150,6 +149,15 @@ position column. The message names every spelling that would have worked.
 **"Longitude and latitude look swapped."** — exactly that. Caught before it
 wasted a render on a blank sheet.
 
-If the tool cannot do what you need, ask Claude to **file a request** — it writes
-up what you wanted and the settings you were using, and hands you a pre-filled
-link.
+---
+
+## Something wrong? Tell Claude to report it
+
+> *"That came out wrong — report it as a bug."*
+
+Claude writes the report: what happened, what should have happened, how to
+reproduce it, and the shape of the data it happened on. You get a pre-filled
+GitHub link and press Submit. Nothing is filed without you seeing it.
+
+**[REPORTING.md](REPORTING.md)** explains what makes a report the maintainer can
+act on — and what must never go in a public issue.

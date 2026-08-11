@@ -2,7 +2,7 @@
 
 Generated from the live server on 11 August 2026. Do not edit by hand — regenerate with `studio/gen_tools_doc.py`.
 
-Server: `gisviz` · 11 tools
+Server: `gisviz` · 12 tools
 
 You do not call these directly. Describe what you want in English and Claude picks the right one — the reference exists so you (and your AI) can see what is possible.
 
@@ -90,6 +90,18 @@ Produce the house drawing sheet: 380x220 mm, title block, coordinate grid, scale
 | `ship_types` | array | no | Draw only this type. The sheet takes ONE of cargo, tanker, fishing, tug, passenger — for any other selection, filter it in the query you upload. |
 | `start` | string | no | ISO date/time, inclusive |
 | `with_tracks` | boolean | no | Draw vessel tracks under the chevrons |
+
+## `report_problem`
+
+Report something WRONG — a chart that came out incorrect, an error, anything that did not behave as it should. Fill every field properly: you are writing a bug report the maintainer has to reproduce without being able to see this conversation. Do NOT ask the user to write it — you were there, so you write it, then show them the link. If a data_id is involved, pass it: the shape of the file gets attached automatically (row counts and columns only, never the AIS records).
+
+| argument | type | required | what it does |
+|---|---|---|---|
+| `steps` | string | **yes** | How to reproduce it, as numbered steps someone else can follow. Name the tool you called and the arguments you passed, e.g. '1. upload X. 2. call plot_sheet with place=Kuantan, dpi=600.' |
+| `what_expected` | string | **yes** | What should have happened instead |
+| `what_happened` | string | **yes** | What actually happened, concretely. Quote the exact error if there was one. |
+| `data_id` | string | no | The dataset involved, if any. Its shape is attached — never its contents. |
+| `settings` | object | no | The exact arguments you passed |
 
 ## `request_feature`
 
