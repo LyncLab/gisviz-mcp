@@ -1,8 +1,12 @@
 # GISviz MCP — connect
 
 Produce MTA-spec maritime drawing sheets by asking Claude in plain English.
-This repository is the **connection guide only**. The plotting toolkit, the chart
-layers and the data stay on LyncLab's server.
+This repository is the **connection guide only**. The plotting toolkit and the
+chart layers stay on LyncLab's server.
+
+**You bring the data.** GISviz draws; it does not query anything. Run your own
+query wherever you normally run it, export CSV or Parquet, and upload that. What
+you can plot is exactly what your query returned.
 
 You need two things from the maintainer:
 
@@ -34,6 +38,36 @@ claude mcp add --transport http gisviz http://100.121.170.8:8787/mcp \
 ```
 
 Restart, then ask **"Check my GISviz access."**
+
+---
+
+## Send your data
+
+Save your key to `~/.gisviz/licence.key` first, then:
+
+```bash
+curl -T ~/Downloads/my_query.parquet http://100.121.170.8:8787/upload \
+  -H "Authorization: Bearer $(cat ~/.gisviz/licence.key)"
+```
+
+Windows PowerShell:
+
+```powershell
+curl.exe -T C:\path\to\my_query.parquet http://100.121.170.8:8787/upload `
+  -H "Authorization: Bearer $(Get-Content $HOME\.gisviz\licence.key)"
+```
+
+You get back a **data id** — `ds_a1b2c3d4e5f6` — and a summary of what the file
+holds. Then just say *"plot ds_a1b2c3d4e5f6 for Port Klang."*
+
+**Claude cannot do this step for you**: the file is on your machine, not the
+server's. Everything after it is conversation.
+
+Your file needs **LON and LAT** columns (`LONGITUDE`/`LATITUDE`/`X`/`Y` also
+work). `MMSI`, `UTC_TIME`, `SHIPTYPE`, `HEADING` and `COURSE` each add something
+to the sheet. Up to 2 GB, as `.csv`, `.csv.gz`, `.tsv` or `.parquet`.
+
+> Uploads and charts are both **deleted after 2 days**. Keep your own copies.
 
 ---
 
@@ -81,9 +115,11 @@ Nothing here needs to be pulled for the tool to work. It is documentation.
 
 ## Quick start, once connected
 
+> *"What data do I have on GISviz?"* — your uploads, newest first
+
 > *"What ports can you plot?"* — 54 Malaysian ports, by name
 
-> *"Plot Kuantan for January at 1:150,000, drawing number LL-DS-26-01-KU-001."*
+> *"Plot ds_a1b2c3d4e5f6 for Kuantan at 1:150,000, drawing number LL-DS-26-01-KU-001."*
 
 > *"That's too dense — sample it to 10%."*
 
@@ -105,8 +141,14 @@ The error messages are written to be acted on. Two worth recognising:
 different machine or network than the key was issued for. Ask for a reissue,
 quoting the licence id in the message.
 
-**"No BigQuery credentials are set up for …"** — your data access has not been
-provisioned yet. The message names exactly what the maintainer must run.
+**"No dataset ds_… for this licence."** — you have not uploaded anything yet, or
+that upload has expired after two days. Upload again.
+
+**"This file cannot be plotted: no LON column…"** — your export is missing a
+position column. The message names every spelling that would have worked.
+
+**"Longitude and latitude look swapped."** — exactly that. Caught before it
+wasted a render on a blank sheet.
 
 If the tool cannot do what you need, ask Claude to **file a request** — it writes
 up what you wanted and the settings you were using, and hands you a pre-filled

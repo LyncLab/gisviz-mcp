@@ -2,20 +2,31 @@
 
 Generated from the live server on 11 August 2026. Do not edit by hand — regenerate with `studio/gen_tools_doc.py`.
 
-Server: `gisviz` · 9 tools
+Server: `gisviz` · 11 tools
 
 You do not call these directly. Describe what you want in English and Claude picks the right one — the reference exists so you (and your AI) can see what is possible.
 
-## `inspect_data`
+## `drop_dataset`
 
-Check an AIS dataset before plotting it: how many rows, what area and time span it covers, which vessel types are present. Use this when the user is unsure what their data holds, or before an expensive render.
+Delete one of the user's uploaded datasets from the server now, rather than waiting for it to expire. Use it when they ask, or when they are done with a large file.
 
 | argument | type | required | what it does |
 |---|---|---|---|
-| `bbox` | list of number | **yes** | [lon_min, lon_max, lat_min, lat_max] |
-| `end` | string | **yes** | ISO date/time, exclusive |
-| `source` | `bigquery` · `postgres` · `demo` | **yes** | Where to read AIS from |
-| `start` | string | **yes** | ISO date/time, inclusive, e.g. 2026-01-26 |
+| `data_id` | string | **yes** | The dataset to delete, from list_datasets |
+
+## `inspect_data`
+
+Check an uploaded dataset before plotting it: how many rows, what area and time span it actually covers, which vessel types are present, and whether it has the columns a sheet needs. Cheap — call it before any expensive render.
+
+| argument | type | required | what it does |
+|---|---|---|---|
+| `data_id` | string | **yes** | From list_datasets, e.g. 'ds_a1b2c3d4e5f6'. Use 'demo' for the bundled sample. |
+
+## `list_datasets`
+
+The user's uploaded AIS files, and how to upload another. Call this before any plot: every render needs a data_id from here. This server holds no database credentials — the user brings their own query results.
+
+Takes no arguments.
 
 ## `list_layers`
 
@@ -45,13 +56,13 @@ Produce an H3 hexagon density map. count_basis matters: 'pings' counts AIS messa
 | `aoi_geojson` | object | no | Your own area as GeoJSON — a Feature, a FeatureCollection or a bare geometry. Use this when the job comes with an AOI file. |
 | `bbox` | array | no |  |
 | `count_basis` | `pings` · `mmsi` · `trajid` | no | What each hexagon counts |
+| `data_id` | string | no | Which of the user's uploaded datasets to plot, from list_datasets. Use 'demo' for the bundled synthetic sample. |
 | `dpi` | integer (72–1200) | no |  |
 | `end` | string | no |  |
 | `exclude_ship_types` | array | no |  |
 | `place` | string | no | A Malaysian port by name, e.g. 'Kuantan' or 'Port Klang'. The frame comes from that port's gazetted limit. See list_places. |
 | `preset` | string | no |  |
 | `ship_types` | array | no |  |
-| `source` | `bigquery` · `postgres` · `demo` | no |  |
 | `start` | string | no |  |
 
 ## `plot_sheet`
@@ -66,17 +77,17 @@ Produce the house drawing sheet: 380x220 mm, title block, coordinate grid, scale
 | `aoi_geojson` | object | no | Your own area as GeoJSON — a Feature, a FeatureCollection or a bare geometry. Use this when the job comes with an AOI file. |
 | `bbox` | array | no | [lon_min, lon_max, lat_min, lat_max], if you already know the extent |
 | `checker` | string | no | Checker's initials |
+| `data_id` | string | no | Which of the user's uploaded datasets to plot, from list_datasets. Use 'demo' for the bundled synthetic sample. |
 | `dpi` | integer (72–1200) | no | 200 to iterate (seconds), 600 or 1200 for a final (minutes, large file) |
 | `drafter` | string | no | Drafter's initials |
 | `end` | string | no | ISO date/time, exclusive |
-| `exclude_ship_types` | array | no | Drop these, e.g. ['tug'] |
+| `exclude_ship_types` | array | no | Not supported on the drawing sheet — exclude them in your query, or use plot_density. |
 | `place` | string | no | A Malaysian port by name, e.g. 'Kuantan' or 'Port Klang'. The frame comes from that port's gazetted limit. See list_places. |
 | `preset` | string | no | A built-in preset name (legacy; prefer place) |
 | `revision` | string | no | Revision code |
 | `sample_percent` | number | no | Plot this percent of pings (1-100). Representative across the whole window, not the first N rows. |
 | `scale` | string | no | Dictate a round map scale, e.g. '300,000'. Without it the scale is whatever the area gives, which review often rejects. |
-| `ship_types` | array | no | Include only these, e.g. ['cargo','tanker'] |
-| `source` | `bigquery` · `postgres` · `demo` | no | Where to read AIS from. 'demo' uses a small bundled synthetic dataset around Port Klang and needs no credentials — useful for a first try. |
+| `ship_types` | array | no | Draw only this type. The sheet takes ONE of cargo, tanker, fishing, tug, passenger — for any other selection, filter it in the query you upload. |
 | `start` | string | no | ISO date/time, inclusive |
 | `with_tracks` | boolean | no | Draw vessel tracks under the chevrons |
 
