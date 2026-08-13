@@ -48,6 +48,21 @@ jobs:
             exit 0
           fi
 
+          # Check the shape before using it, and say so without ever echoing it.
+          # A wrong value used to surface as bare "exit code 3" (curl: malformed
+          # URL) with no output at all, because `bash -e` aborts on the failing
+          # command substitution before the diagnostic line runs.
+          case "$HOOK" in
+            https://hooks.slack.com/services/*) ;;
+            *)
+              echo "::error::SLACK_WEBHOOK_URL does not look like a Slack incoming webhook."
+              echo "Expected it to start with https://hooks.slack.com/services/"
+              echo "Length of the stored value: ${#HOOK} characters."
+              echo "Re-copy the webhook from api.slack.com -> your app -> Incoming Webhooks,"
+              echo "then:  pbpaste | gh secret set SLACK_WEBHOOK_URL --repo $REPO"
+              exit 1 ;;
+          esac
+
           case "$EVENT" in
             issues)
               case "$ACTION" in
@@ -70,8 +85,22 @@ jobs:
 
           # jq builds the JSON so a quote or backtick in a title cannot break it.
           jq -n --arg t "$TEXT" '{text: $t, mrkdwn: true}' > payload.json
-          code=$(curl -s -o resp.txt -w '%{http_code}' -X POST \
+
+          # Do not let curl's own exit status abort the step under `bash -e`,
+          # or the failure arrives as a number with no explanation.
+          set +e
+          code=$(curl -sS -o resp.txt -w '%{http_code}' -X POST \
                    -H 'Content-Type: application/json' \
-                   --data @payload.json "$HOOK")
+                   --data @payload.json "$HOOK" 2>curlerr.txt)
+          rc=$?
+          set -e
+          if [ "$rc" != "0" ]; then
+            echo "::error::curl failed (exit $rc): $(cat curlerr.txt)"
+            exit 1
+          fi
           echo "Slack responded $code: $(cat resp.txt)"
-          [ "$code" = "200" ]
+          if [ "$code" != "200" ]; then
+            echo "::error::Slack rejected the post. 'invalid_token' or 404 means the"
+            echo "webhook was revoked or belongs to a deleted app; re-create it."
+            exit 1
+          fi
