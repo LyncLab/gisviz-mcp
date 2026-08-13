@@ -267,8 +267,13 @@ spelling that would have worked.
 in your query — this would otherwise have rendered an empty sheet with no clue
 why.
 
-**HTTP 401 on upload.** The server did not accept your key. Check
-`~/.gisviz/service.key` holds the single `gvz1.…` line and nothing else.
+**HTTP 410 on upload.** That upload link has already been used, or it is more
+than 45 minutes old. Ask Claude for the command again — a fresh one costs
+nothing.
+
+**HTTP 401 on upload.** You are using an old command that had a key in it. Ask
+Claude for the upload command again; the current one carries a one-time link and
+needs no key.
 
 **HTTP 413 on upload.** Over 2 GB. Narrow the query.
 
@@ -327,7 +332,7 @@ an honest picture of the traffic pattern; it is not a count of vessels.
 | ask for | example |
 |---|---|
 | check access | *"Check my GISviz access"* |
-| upload | `curl -T file.parquet http://100.121.170.8:8787/upload -H "Authorization: Bearer $(cat ~/.gisviz/service.key)"` |
+| upload | *"Give me the upload command"* → run the `curl -T …` line it hands you |
 | what you have | *"What data do I have on GISviz?"* |
 | check a file | *"What's in ds_a1b2c3d4e5f6?"* |
 | list ports | *"What ports can you plot?"* |
